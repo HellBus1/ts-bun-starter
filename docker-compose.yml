@@ -1,0 +1,42 @@
+services:
+  # PostgreSQL Database
+  db:
+    image: postgres:16-alpine
+    container_name: ts-bun-starter-db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-ts_bun_starter}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/init-test-db.sql:/docker-entrypoint-initdb.d/init-test-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Liquibase Migration Runner
+  liquibase:
+    image: liquibase/liquibase:4.30
+    container_name: ts-bun-starter-liquibase
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      LIQUIBASE_COMMAND_URL: jdbc:postgresql://db:5432/${DB_NAME:-ts_bun_starter}
+      LIQUIBASE_COMMAND_USERNAME: ${DB_USER:-postgres}
+      LIQUIBASE_COMMAND_PASSWORD: ${DB_PASSWORD:-postgres}
+    volumes:
+      - ./liquibase:/liquibase/changelog
+    command: >
+      --defaults-file=/liquibase/changelog/liquibase.properties
+      update
+    profiles:
+      - migrate
+
+volumes:
+  pgdata:

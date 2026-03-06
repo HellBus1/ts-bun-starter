@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "skills": {
+    "backend-patterns": {
+      "source": "affaan-m/everything-claude-code",
+      "sourceType": "github",
+      "computedHash": "24d5803368c402ed5a72541dbbd0cb9975c56e574cdf4b45332f54991186301a"
+    },
+    "bun-development": {
+      "source": "sickn33/antigravity-awesome-skills",
+      "sourceType": "github",
+      "computedHash": "2495ba6f5ade951aea79cd76303c29173edb5512fb4b4e896b2cf763b86af466"
+    }
+  }
+}

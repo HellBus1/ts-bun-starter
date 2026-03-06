@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+
+# Environment
+.env
+
+# Bun
+bun.lockb
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Old SQLite data (no longer used)
+data/
+
+# Logs
+*.log
+.agent/
+.agents/
