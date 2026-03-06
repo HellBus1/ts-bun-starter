@@ -17,7 +17,7 @@ import { createTestConnection, truncateAll } from "../helpers/test-utils";
 
 describe("User Controller", () => {
   let sql: Sql;
-  let app: Elysia;
+  let app: any;
 
   beforeAll(() => {
     sql = createTestConnection();
@@ -43,7 +43,7 @@ describe("User Controller", () => {
       const response = await app.handle(
         new Request("http://localhost/api/users")
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(200);
       expect(body.success).toBe(true);
@@ -64,7 +64,7 @@ describe("User Controller", () => {
           }),
         })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(201);
       expect(body.success).toBe(true);
@@ -85,7 +85,7 @@ describe("User Controller", () => {
           }),
         })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(400);
       expect(body.success).toBe(false);
@@ -117,7 +117,7 @@ describe("User Controller", () => {
           }),
         })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(409);
       expect(body.success).toBe(false);
@@ -142,7 +142,7 @@ describe("User Controller", () => {
       const response = await app.handle(
         new Request("http://localhost/api/users/1")
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(200);
       expect(body.data.name).toBe("Bob");
@@ -152,7 +152,7 @@ describe("User Controller", () => {
       const response = await app.handle(
         new Request("http://localhost/api/users/999")
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(404);
       expect(body.success).toBe(false);
@@ -181,7 +181,7 @@ describe("User Controller", () => {
           body: JSON.stringify({ name: "Charlie Updated" }),
         })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(200);
       expect(body.data.name).toBe("Charlie Updated");
@@ -206,7 +206,7 @@ describe("User Controller", () => {
       const response = await app.handle(
         new Request("http://localhost/api/users/1", { method: "DELETE" })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(200);
       expect(body.success).toBe(true);
@@ -216,7 +216,7 @@ describe("User Controller", () => {
       const response = await app.handle(
         new Request("http://localhost/api/users/999", { method: "DELETE" })
       );
-      const body = await response.json();
+      const body = (await response.json()) as any;
 
       expect(response.status).toBe(404);
       expect(body.success).toBe(false);

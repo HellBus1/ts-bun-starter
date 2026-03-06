@@ -152,6 +152,19 @@ Always include a `rollback` section for safe reversibility.
 | `created_at` | `TIMESTAMP WITH TIME ZONE` | NOT NULL, DEFAULT NOW() |
 | `updated_at` | `TIMESTAMP WITH TIME ZONE` | NOT NULL, DEFAULT NOW() |
 
+### `refresh_tokens` Table
+
+| Column | Type | Constraints |
+|--------|------|-------------|
+| `id` | `SERIAL` | Primary key, auto-increment |
+| `user_id` | `INTEGER` | NOT NULL, FK → `users.id` (CASCADE) |
+| `token` | `VARCHAR(500)` | NOT NULL, UNIQUE |
+| `expires_at` | `TIMESTAMP WITH TIME ZONE` | NOT NULL |
+| `revoked` | `BOOLEAN` | NOT NULL, DEFAULT false |
+| `created_at` | `TIMESTAMP WITH TIME ZONE` | NOT NULL, DEFAULT NOW() |
+
+**Indexes:** `idx_refresh_tokens_token`, `idx_refresh_tokens_user_id`
+
 ## Connection Configuration
 
 All credentials are in `.env` (gitignored):

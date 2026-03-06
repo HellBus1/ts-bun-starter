@@ -27,7 +27,7 @@ export function createTestConnection(): Sql {
  * Truncate all application tables (preserves Liquibase metadata).
  */
 export async function truncateAll(sql: Sql): Promise<void> {
-  await sql`TRUNCATE TABLE users RESTART IDENTITY CASCADE`;
+  await sql`TRUNCATE TABLE refresh_tokens, users RESTART IDENTITY CASCADE`;
 }
 
 /**

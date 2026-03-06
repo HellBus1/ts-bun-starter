@@ -8,6 +8,13 @@ export interface AppConfig {
   nodeEnv: string;
   logLevel: string;
   db: DatabaseConfig;
+  jwt: JwtConfig;
+}
+
+export interface JwtConfig {
+  secret: string;
+  accessExpirySeconds: number;
+  refreshExpiryDays: number;
 }
 
 export interface DatabaseConfig {
@@ -29,6 +36,11 @@ export function loadConfig(): AppConfig {
       database: Bun.env.DB_NAME ?? "ts_bun_starter",
       username: Bun.env.DB_USER ?? "postgres",
       password: Bun.env.DB_PASSWORD ?? "postgres",
+    },
+    jwt: {
+      secret: Bun.env.JWT_SECRET ?? "change-me-in-production",
+      accessExpirySeconds: parseInt(Bun.env.JWT_ACCESS_EXPIRY_SECONDS ?? "900", 10),
+      refreshExpiryDays: parseInt(Bun.env.JWT_REFRESH_EXPIRY_DAYS ?? "7", 10),
     },
   };
 }

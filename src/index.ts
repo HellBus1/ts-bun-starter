@@ -10,9 +10,13 @@ import { Container } from "./container/container";
 import { loadConfig } from "./config/config";
 import { DatabaseManager } from "./database/database";
 import { createUserDao, type IUserDao } from "./dao/user.dao";
+import { createRefreshTokenDao, type IRefreshTokenDao } from "./dao/refresh-token.dao";
 import { UserRepository } from "./repositories/user.repository";
 import { UserService } from "./services/user.service";
+import { AuthService } from "./services/auth.service";
 import { createUserController } from "./controllers/user.controller";
+import { createAuthController } from "./controllers/auth.controller";
+import { createJwtHelper, type JwtHelper } from "./common/jwt";
 import { errorHandler } from "./middleware/error-handler";
 import { requestLogger } from "./middleware/request-logger";
 import { Logger } from "./common/logger";
@@ -32,6 +36,12 @@ const container = new Container();
 // Config
 container.registerInstance("config", config);
 
+// JWT
+container.registerInstance(
+  "jwt",
+  createJwtHelper(config.jwt.secret, config.jwt.accessExpirySeconds)
+);
+
 // Database
 container.registerSingleton(
   "database",
@@ -42,6 +52,11 @@ container.registerSingleton(
 container.registerSingleton(
   "userDao",
   (c) => createUserDao(c.resolve<DatabaseManager>("database").getConnection())
+);
+
+container.registerSingleton(
+  "refreshTokenDao",
+  (c) => createRefreshTokenDao(c.resolve<DatabaseManager>("database").getConnection())
 );
 
 // Repository layer
@@ -56,10 +71,23 @@ container.registerSingleton(
   (c) => new UserService(c.resolve<UserRepository>("userRepository"))
 );
 
+container.registerSingleton(
+  "authService",
+  (c) =>
+    new AuthService(
+      c.resolve<UserRepository>("userRepository"),
+      c.resolve<IRefreshTokenDao>("refreshTokenDao"),
+      c.resolve<JwtHelper>("jwt"),
+      config.jwt.refreshExpiryDays
+    )
+);
+
 // ---------------------------------------------------------------------------
 // 3. Create Elysia app with middleware & controllers
 // ---------------------------------------------------------------------------
 const userService = container.resolve<UserService>("userService");
+const authService = container.resolve<AuthService>("authService");
+const jwt = container.resolve<JwtHelper>("jwt");
 
 const app = new Elysia()
   .use(errorHandler)
@@ -74,6 +102,7 @@ const app = new Elysia()
     timestamp: new Date().toISOString(),
   }))
   .use(createUserController(userService))
+  .use(createAuthController(authService, jwt))
   .listen(config.port);
 
 logger.info(`Server started`, {

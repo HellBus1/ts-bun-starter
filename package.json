@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "elysia": "^1.2.25",
+    "jose": "^6.2.0",
     "postgres": "^3.4.8"
   },
   "devDependencies": {

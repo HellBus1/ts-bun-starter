@@ -40,9 +40,11 @@ tests/
 ├── repositories/
 │   └── user.repository.test.ts      # Repository tests (real PostgreSQL)
 ├── services/
-│   └── user.service.test.ts         # Service tests (mocked repository)
+│   ├── user.service.test.ts         # Service tests (mocked repository)
+│   └── auth.service.test.ts         # Auth service tests (mocked deps)
 └── controllers/
-    └── user.controller.test.ts      # Integration tests (real PostgreSQL)
+    ├── user.controller.test.ts      # Integration tests (real PostgreSQL)
+    └── auth.controller.test.ts      # Auth integration tests (real PostgreSQL)
 ```
 
 ## Test Strategy by Layer
@@ -72,6 +74,14 @@ tests/
 - Pure unit tests — no external dependencies
 - Test registration, resolution, singletons, dependency chains
 
+### Auth Service Tests
+- **Mock-based** — mocked repository, refresh token DAO, and JWT helper
+- Tests: register (validation, duplicate, success), login (credentials), refresh (rotation), logout
+
+### Auth Controller Tests
+- **Integration tests** — full HTTP flow against real PostgreSQL
+- Tests: register → login → refresh (with rotation) → `/me` (valid/invalid/no token) → logout (revoke + verify)
+
 ## Test Utilities
 
 `tests/helpers/test-utils.ts` provides:
@@ -79,7 +89,7 @@ tests/
 | Function | Purpose |
 |----------|---------|
 | `createTestConnection()` | Connect to `ts_bun_starter_test` database |
-| `truncateAll(sql)` | Clear all rows, reset ID sequences |
+| `truncateAll(sql)` | Clear `refresh_tokens` + `users`, reset ID sequences |
 | `createTestUserDao(sql)` | Create a DAO for the test connection |
 | `seedUsers(dao)` | Insert 3 sample users (Alice, Bob, Charlie) |
 

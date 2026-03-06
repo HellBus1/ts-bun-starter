@@ -69,12 +69,12 @@ export interface UpdateOrderDto {
 export type OrderResponse = Omit<Order, "sensitiveField">;
 ```
 
-### 2. Migration (`liquibase/changelogs/002-create-orders-table.yaml`)
+### 2. Migration (`liquibase/changelogs/003-create-orders-table.yaml`)
 
 ```yaml
 databaseChangeLog:
   - changeSet:
-      id: 002-create-orders-table
+      id: 003-create-orders-table
       author: your-name
       changes:
         - createTable:
@@ -184,7 +184,7 @@ Add tests mirroring the structure in `tests/`:
 Update `tests/helpers/test-utils.ts`:
 ```typescript
 export async function truncateAll(sql: Sql): Promise<void> {
-  await sql`TRUNCATE TABLE orders, users RESTART IDENTITY CASCADE`;
+  await sql`TRUNCATE TABLE orders, refresh_tokens, users RESTART IDENTITY CASCADE`;
 }
 ```
 
@@ -222,20 +222,34 @@ ts-bun-starter/
 │   ├── database/database.ts
 │   ├── common/
 │   │   ├── errors.ts
+│   │   ├── jwt.ts              # JWT sign/verify (jose)
 │   │   ├── logger.ts
 │   │   └── types.ts
 │   ├── models/
 │   ├── dao/
+│   │   ├── user.dao.ts
+│   │   └── refresh-token.dao.ts
 │   ├── repositories/
 │   ├── services/
+│   │   ├── user.service.ts
+│   │   └── auth.service.ts
 │   ├── controllers/
+│   │   ├── user.controller.ts
+│   │   └── auth.controller.ts
 │   └── middleware/
+│       ├── error-handler.ts
+│       ├── request-logger.ts
+│       └── auth-guard.ts
 │
-└── tests/                      # Mirrors src/
+└── tests/
     ├── helpers/test-utils.ts
     ├── container/
     ├── dao/
     ├── repositories/
     ├── services/
+    │   ├── user.service.test.ts
+    │   └── auth.service.test.ts
     └── controllers/
+        ├── user.controller.test.ts
+        └── auth.controller.test.ts
 ```
